@@ -376,6 +376,8 @@ struct FurnaceCV {
   unsigned short* curStage;
   int stageWidth, stageHeight;
 
+  float framecounter;  // this could be better honestly
+
   const char* typeAddr;
   unsigned char typeDelay;
   int typeX, typeY;
@@ -1295,6 +1297,12 @@ void FurnaceCV::rasterH(int scanline) {
 }
 
 void FurnaceCV::render(unsigned char joyIn) {
+
+  if ((framecounter += ImGui::GetIO().DeltaTime) <= 0.014f) // limit ticks to 72 fps...
+    return;
+  else
+    framecounter = 0;
+
   // input
   joyInputPrev=joyInput;
   joyInput=joyIn;
@@ -1310,6 +1318,7 @@ void FurnaceCV::render(unsigned char joyIn) {
   );
   joyPressed=(joyInputPrev^0xff)&joyInput;
   joyReleased=(joyInput^0xff)&joyInputPrev;
+
 
   // logic
   typeTick();
